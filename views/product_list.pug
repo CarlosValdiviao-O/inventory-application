@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  h1= title
+
+  ul
+    each product in product_list
+      li
+        a(href=product.url) #{product.name}
+          img(src=`data:image/${product.mimeType};base64,${product.base64}`, alt="image")
+
+    else
+      li There are no products.
