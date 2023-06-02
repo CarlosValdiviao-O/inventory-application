@@ -11,7 +11,12 @@ const InstrumentSchema = new Schema({
 });
 
 InstrumentSchema.virtual("url").get(function () {
-  return `/catalog/instrument/${this.name}/${this._id}`;
+  return `/catalog/instrument/${this.name.toLowerCase().replace(/ /g, '-')}/${this._id}`;
+});
+
+InstrumentSchema.virtual('mime_type').get(function () {
+  let divided = this.image_name.split('.');
+  return divided[divided.length - 1];
 });
 
 module.exports = mongoose.model("Instrument", InstrumentSchema);

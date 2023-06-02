@@ -1,12 +1,13 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #[em Instrument Shop], the place for all your instrument needs.
+  div(class='wrapper')
+    h1= title
+    p Welcome to #[em Instrument Shop], the place for all your instrument needs.
 
-  p The shop has the following record counts:
+    p The shop has the following record counts:
 
-  ul
-    li #[strong Products:] !{product_count}
-    li #[strong Instruments:] !{instrument_count}
-    li #[strong Brands:] !{brand_count}
+    ul
+      li #[strong Products:] !{product_count}
+      li #[strong Instruments:] !{instrument_count}
+      li #[strong Brands:] !{brand_count}

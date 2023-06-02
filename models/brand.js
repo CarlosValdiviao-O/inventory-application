@@ -11,7 +11,12 @@ const BrandSchema = new Schema({
 });
 
 BrandSchema.virtual("url").get(function () {
-  return `/catalog/brand/${this.name}/${this._id}`;
+  return `/catalog/brand/${this.name.toLowerCase().replace(/ /g, '-')}/${this._id}`;
+});
+
+BrandSchema.virtual('mime_type').get(function () {
+  let divided = this.logo_name.split('.');
+  return divided[divided.length - 1];
 });
 
 module.exports = mongoose.model("Brand", BrandSchema);

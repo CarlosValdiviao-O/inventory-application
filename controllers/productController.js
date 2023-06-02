@@ -25,7 +25,7 @@ exports.index = asyncHandler(async (req, res, next) => {
 
 // Display list of all products.
 exports.product_list = asyncHandler(async (req, res, next) => {
-    const allProducts = await Product.find({}, "name image")
+    const allProducts = await Product.find({}, "name image image_name price mime_type")
       .sort({ name: 1 })
       .exec();
     for(let i = 0; i < allProducts.length; i++) {
@@ -36,7 +36,19 @@ exports.product_list = asyncHandler(async (req, res, next) => {
 
 // Display detail page for a specific product.
 exports.product_detail = asyncHandler(async (req, res, next) => {
-  res.send(`NOT IMPLEMENTED: Book detail: ${req.params.id}`);
+  const product = await Product.findById(req.params.id).populate('brand').populate('instrument').exec();
+  product.base64 = new Buffer(product.image).toString('base64');
+  if (product === null) {
+    // No results.
+    const err = new Error("Product not found");
+    err.status = 404;
+    return next(err);
+  }
+
+  res.render("product_detail", {
+    title: product.name,
+    product: product,
+  });
 });
 
 // Display product create form on GET.

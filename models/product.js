@@ -18,4 +18,9 @@ ProductSchema.virtual("url").get(function () {
   return `/catalog/product/${this.name.toLowerCase().replace(/ /g, '-')}/${this._id}`;
 });
 
+ProductSchema.virtual('mime_type').get(function () {
+  let divided = this.image_name.split('.');
+  return divided[divided.length - 1];
+});
+
 module.exports = mongoose.model("Product", ProductSchema);

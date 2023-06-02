@@ -1,0 +1,18 @@
+extends layout 
+
+block content
+  div(class='card product')
+    div(class='image-wrapper')
+      div(class='image') 
+        img(src=`data:image/${product.mime_type};base64,${product.base64}`, alt=product.image_name)
+    div(class='info') 
+      h1 #{product.name}
+      p= product.description
+      p #[strong Price: ]
+        span= product.price + '$'
+      p #[strong In Stock: ]
+        span= product.in_stock
+      p #[strong Brand: ]
+        a(href=product.brand.url) #{product.brand.name}
+      p #[strong Instrument: ]
+        a(href=product.instrument.url) #{product.instrument.name}

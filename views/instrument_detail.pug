@@ -1,10 +1,15 @@
-extends layout
+extends layout 
 
-block content
-  h1= title
+block content 
 
+  div(class='category')
+    div(class='image')
+      img(src=`data:image/${instrument.mime_type};base64,${instrument.base64}`, alt=instrument.image_name)
+    h1= title 
+    p= instrument.description 
+  h1 Products
   ul
-    each product in product_list
+    each product in instrument_products
       li(class='card')
         a(href=product.url)
           div(class='image-wrapper')
@@ -14,4 +19,4 @@ block content
             h3 #{product.name}
             p= product.price + '$'
     else
-      li There are no products.
+      li There are no products.  

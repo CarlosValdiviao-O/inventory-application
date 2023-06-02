@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  h1= title
+
+  ul
+    each instrument in instrument_list
+      li(class='card')
+        a(href=instrument.url)
+          div(class='image instrument') 
+            p= instrument.name
+            img(src=`data:image/${instrument.mime_type};base64,${instrument.base64}`, alt=instrument.image_name)
+    else
+      li There are no instruments.

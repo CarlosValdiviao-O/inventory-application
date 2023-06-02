@@ -1,13 +1,170 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  border: 0;
+}
+
 body {
-  padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 a {
   color: #00B7FF;
+  text-decoration: none;
 }
 
 img {
   height: 200px;
-  width: auto;
+}
+
+nav ul {
+  display: flex;
+  list-style: none;
+  height: 40px;
+  align-items: center;
+  background-color: grey;
+}
+
+nav ul li {
+  margin-right: 12px;
+  padding: 12px;
+}
+
+.home {
+  margin-right: auto;
+}
+
+.create {
+  position: relative;
+}
+
+.create button{
+  height: 100%;
+  display: flex;
+  cursor: pointer;
+  background-color: transparent;
+}
+
+.create-links {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  white-space: nowrap;
+}
+
+.create-links p {
+  padding: 12px;
+}
+
+.create .create-links, .create .create-links * {
+  display: none;
+} 
+
+.create:hover .create-links, .create:hover .create-links * {
+  display: block;
+} 
+
+.content {
+  min-height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
+}
+
+.wrapper {
+  margin: auto;
+  margin-top: 100px;
+  border-radius: 8px;
+  border: solid black 1px;
+  padding: 20px;
+}
+
+.wrapper>* {
+  margin-bottom: 20px;
+}
+
+.wrapper ul {
+  list-style: none;
+}
+
+.content h1 {
+  margin: 30px;
+}
+
+.content ul {
+  margin-left: 30px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 30px;
+  list-style: none;
+  margin-bottom: 30px;
+}
+
+.card:not(.product) a { 
+  width: 400px;
+  display: flex;
+  border: 1px solid black;
+  border-radius: 4px;
+  height: 220px;
+}
+
+.card .image-wrapper {
+  width: 60%;
+  display: flex;
+}
+
+.card .image {
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  margin: auto;
+}
+
+.card .info {
+  margin: 12px
+}
+
+.card .instrument {
+  position: relative;
+}
+
+.instrument p {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  bottom: 10%;
+}
+
+.category .image {
+  margin: auto;
+  width: fit-content;
+}
+
+.category .image img {
+  height: 340px;
+}
+
+.category h1 {
+  margin-bottom: 15px;
+}
+
+.category p {
+  margin: 0 30px;
+}
+
+.product {
+  display: flex;
+  margin: 30px;
+}
+
+.product h1 {
+  margin: 0;
+}
+
+.product .info {
+  margin-left: 20px;
+}
+
+.product .info *{
+  margin-bottom: 12px;
 }

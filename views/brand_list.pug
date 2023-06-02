@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  h1= title
+
+  ul
+    each brand in brand_list
+      li(class='card brand')
+        a(href=brand.url)
+          div(class='image') 
+            img(src=`data:image/${brand.mime_type};base64,${brand.base64}`, alt=brand.logo_name)
+    else
+      li There are no brands.
