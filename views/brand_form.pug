@@ -1,0 +1,21 @@
+extends layout
+
+block content
+  h1 #{title}
+
+  form(method='POST' action='' enctype='multipart/form-data')
+    div
+      label(for='name') Brand:
+      input#name(type='text', placeholder='e.g Yamaha' name='name' value=(undefined===brand ? '' : brand.name))
+    div
+      label(for='description') Description:
+      textarea#(name="", cols="30", rows="10") #description(type='text', placeholder='e.g This manufacturer started in the year..' name='description' value=(undefined===brand ? '' : brand.description))
+    div
+      label(for='productImage') Logo:
+      input#productImage(type='file', name='productImage' )
+    button(type='submit') Submit
+
+  if errors
+   ul(class='errors')
+    for error in errors
+     li!= error.msg || error.message

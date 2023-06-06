@@ -1,6 +1,8 @@
 const Brand = require("../models/brand");
 const Product = require('../models/product');
 const asyncHandler = require("express-async-handler");
+const { body, validationResult } = require("express-validator");
+const fs = require('mz/fs');
 
 // Display list of all Brand.
 exports.brand_list = asyncHandler(async (req, res, next) => {
@@ -41,13 +43,82 @@ exports.brand_detail = asyncHandler(async (req, res, next) => {
 
 // Display Brand create form on GET.
 exports.brand_create_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Genre create GET");
+  res.render("brand_form", { title: "Create Brand" });
 });
 
 // Handle Brand create on POST.
-exports.brand_create_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Genre create POST");
-});
+exports.brand_create_post = [
+  // Validate and sanitize fields.
+  body("name", "Brand name must contain at least 3 characters")
+    .trim()
+    .isLength({ min: 3 })
+    .escape(),
+  body("name", "Brand name must contain less than 50 characters")
+    .trim()
+    .isLength({ max: 50 })
+    .escape(),
+  body('description', 'Description must contain at least 50 characters')
+    .trim()
+    .isLength({ min: 50 })
+    .escape(),
+  body('description', 'Description must contain less than 1000 characters')
+    .trim()
+    .isLength({ max: 1000 })
+    .escape(),
+
+  // Process request after validation and sanitization.
+  asyncHandler(async (req, res, next) => {
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+    let fileErrors = [];
+    let img,
+      img_name;
+    if (req.file) {
+      let data = await fs.readFile(`./uploads/${req.file.filename}`);
+
+      // Convert to Base64 and print out a bit to show it's a string
+      let base64 = data.toString('base64');
+
+      // Feed out string to a buffer and then put it in the database
+      img = new Buffer(base64, 'base64');
+      img_name = req.body.name.toLowerCase().replace(/ /g, '-') + '.' + req.file.mimetype;
+      await fs.unlink(`./uploads/${req.file.filename}`);
+    }
+    else {
+      fileErrors.push(new Error('You must pick a file / Invalid file'));
+    }
+    // Create a brand object with escaped and trimmed data.
+    const brand = new Brand({ 
+      name: req.body.name,
+      description: req.body.description, 
+      logo: img,
+      logo_name: img_name,
+      admin: false,
+    });
+
+    if (!errors.isEmpty() || fileErrors.length > 0) {
+      // There are errors. Render the form again with sanitized values/error messages.
+      res.render("brand_form", {
+        title: "Create Brand",
+        brand: brand,
+        errors: errors.array().concat(fileErrors),
+      });
+      return;
+    } else {
+      // Data from form is valid.
+      // Check if brand with same name already exists.
+      const brandExists = await Brand.findOne({ name: req.body.name }).exec();
+      if (brandExists) {
+        // brand exists, redirect to its detail page.
+        res.redirect(brandExists.url);
+      } else {
+        await brand.save();
+        // New brand saved. Redirect to brand detail page.
+        res.redirect(brand.url);
+      }
+    }
+  }),
+];
 
 // Display Brand delete form on GET.
 exports.brand_delete_get = asyncHandler(async (req, res, next) => {
@@ -68,3 +139,5 @@ exports.brand_update_get = asyncHandler(async (req, res, next) => {
 exports.brand_update_post = asyncHandler(async (req, res, next) => {
   res.send("NOT IMPLEMENTED: Genre update POST");
 });
+
+//too bien

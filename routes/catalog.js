@@ -6,6 +6,33 @@ const product_controller = require("../controllers/productController");
 const instrument_controller = require("../controllers/instrumentController");
 const brand_controller = require("../controllers/brandController");
 
+const multer = require('multer');
+
+const storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function(req, file, cb) {
+    cb(null, file.fieldname + new Date().toISOString() + file.originalname);
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  let valid = ['image/png', 'image/jpg', 'image/jpeg'];
+  if (valid.includes(file.mimetype)) 
+    cb(null, true)
+  else
+    cb(null, false)
+}
+
+const upload = multer({ 
+  storage: storage,
+  limits: {
+    fileSize: 1024 * 1024 * 8,
+  },
+  fileFilter: fileFilter, 
+});
+
 /// PRODUCT ROUTES ///
 
 // GET catalog home page.
@@ -15,7 +42,7 @@ router.get("/", product_controller.index);
 router.get("/product/create", product_controller.product_create_get);
 
 // POST request for creating product.
-router.post("/product/create", product_controller.product_create_post);
+router.post("/product/create", upload.single('productImage'), product_controller.product_create_post);
 
 // GET request to delete product.
 router.get("/product/:name/:id/delete", product_controller.product_delete_get);
@@ -41,7 +68,7 @@ router.get("/products", product_controller.product_list);
 router.get("/instrument/create", instrument_controller.instrument_create_get);
 
 // POST request for creating instrument.
-router.post("/instrument/create", instrument_controller.instrument_create_post);
+router.post("/instrument/create", upload.single('productImage'), instrument_controller.instrument_create_post);
 
 // GET request to delete instrument.
 router.get("/instrument/:name/:id/delete", instrument_controller.instrument_delete_get);
@@ -67,7 +94,7 @@ router.get("/instruments", instrument_controller.instrument_list);
 router.get("/brand/create", brand_controller.brand_create_get);
 
 //POST request for creating brand.
-router.post("/brand/create", brand_controller.brand_create_post);
+router.post("/brand/create", upload.single('productImage'), brand_controller.brand_create_post);
 
 // GET request to delete brand.
 router.get("/brand/:name/:id/delete", brand_controller.brand_delete_get);
@@ -88,3 +115,6 @@ router.get("/brand/:name/:id", brand_controller.brand_detail);
 router.get("/brands", brand_controller.brand_list);
 
 module.exports = router;
+
+
+//too bien

@@ -199,15 +199,14 @@ async function getFiles(files) {
 
   for ( let i = 0; i < files.length; i ++) {
 
-  let data = await fs.readFile(`./db_images/${files[i]}`);
+    let data = await fs.readFile(`./db_images/${files[i]}`);
 
-  // Convert to Base64 and print out a bit to show it's a string
-  let base64 = data.toString('base64');
-  let splited = files[i].split('.');
+    // Convert to Base64 and print out a bit to show it's a string
+    let base64 = data.toString('base64');
 
-  // Feed out string to a buffer and then put it in the database
-  let img = new Buffer(base64, 'base64');
-  images.push({ "image_name": files[i], "image": img, "mimeType": splited[splited.length - 1] });
+    // Feed out string to a buffer and then put it in the database
+    let img = new Buffer(base64, 'base64');
+    images.push({ "image_name": files[i], "image": img });
   }
   return images;
 }

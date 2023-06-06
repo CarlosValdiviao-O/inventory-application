@@ -10,7 +10,7 @@ body {
 }
 
 a {
-  color: #00B7FF;
+  color: white;
   text-decoration: none;
 }
 
@@ -44,6 +44,7 @@ nav ul li {
   display: flex;
   cursor: pointer;
   background-color: transparent;
+  color: white;
 }
 
 .create-links {
@@ -51,10 +52,12 @@ nav ul li {
   top: 100%;
   right: 0;
   white-space: nowrap;
+  transform: translateX(12px);
 }
 
 .create-links p {
   padding: 12px;
+  background-color: grey;
 }
 
 .create .create-links, .create .create-links * {
@@ -69,6 +72,7 @@ nav ul li {
   min-height: calc(100vh - 40px);
   display: flex;
   flex-direction: column;
+  padding-bottom: 30px;
 }
 
 .wrapper {
@@ -121,7 +125,8 @@ nav ul li {
 }
 
 .card .info {
-  margin: 12px
+  margin: 12px;
+  color: black
 }
 
 .card .instrument {
@@ -133,6 +138,7 @@ nav ul li {
   width: 100%;
   text-align: center;
   bottom: 10%;
+  text-shadow: 1px 1px rgba(0, 0, 0, 0.6);
 }
 
 .category .image {
@@ -167,4 +173,70 @@ nav ul li {
 
 .product .info *{
   margin-bottom: 12px;
+  word-break: break-all;
+}
+
+.product a {
+  color: grey;
+}
+
+form {
+  width: 60%;
+  min-width: 400px;
+  margin: 0 auto;
+  border: 1px solid black;
+  border-radius: 8px;
+  padding: 18px;
+  font-size: large;
+}
+
+form div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  justify-content: left;
+  margin: 6px 0 18px;
+  align-items: flex-start;
+}
+
+form input, form textarea, form select {
+  border: 1px solid black;
+  border-radius: 2px;
+  font-size: large;
+  width: 100%;
+  padding: 3px 6px;
+  resize: none;
+  background-color: white;
+  color: #757575;
+}
+
+form button {
+  padding: 12px 8px;
+  background-color: grey;
+  cursor: pointer;
+  color: white;
+  border-radius: 4px;
+  box-shadow: 2px 2px rgba(0, 0, 0, 0.6);
+  transition: .2 ease-in-out all;
+}
+
+form button:active {
+  transform: translateY(2px);
+  box-shadow: -2px -2px rgba(0, 0, 0, 0.6);
+}
+
+.content .errors {
+  width: 60%;
+  min-width: 400px;
+  margin: 0 auto;
+  list-style: none;
+  color: red;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.errors li::before {
+  content: '**';
 }
