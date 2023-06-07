@@ -27,7 +27,7 @@ block content
             option(value=brand._id) #{brand.name}
     div
       label(for='description') Description:
-      textarea#description(type='textarea', placeholder='Description' name='description' required='true') #{undefined===product ? '' : product.description}
+      textarea#description(placeholder='Description' name='description' required='true') #{undefined===product ? '' : product.description}
     div
       label(for='price') Price:
       input#price(type='text', placeholder='Price' name='price' value=(undefined===product ? '' : product.price) required='true')

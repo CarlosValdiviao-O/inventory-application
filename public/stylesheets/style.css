@@ -176,11 +176,25 @@ nav ul li {
   word-break: break-all;
 }
 
-.product a {
+.product a, .bottom-link a {
   color: grey;
 }
 
-form {
+.product a:hover, .bottom-link a:hover {
+  text-decoration: underline;
+}
+
+hr {
+  margin: 0 20px;
+  height: 1px;
+  background-color: rgba(128, 128, 128, 0.7);
+}
+
+.bottom-link {
+  margin: 15px 30px;
+}
+
+form:not(.delete) {
   width: 60%;
   min-width: 400px;
   margin: 0 auto;
@@ -190,7 +204,7 @@ form {
   font-size: large;
 }
 
-form div {
+form:not(.delete) div {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -239,4 +253,8 @@ form button:active {
 
 .errors li::before {
   content: '**';
+}
+
+.delete {
+  margin: 10px 30px;
 }

@@ -4,6 +4,8 @@ const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
 const fs = require('mz/fs');
 
+require('dotenv').config();
+
 // Display list of all Brand.
 exports.brand_list = asyncHandler(async (req, res, next) => {
   const allBrands = await Brand.find().sort({ name: 1 }).exec();
@@ -23,15 +25,15 @@ exports.brand_detail = asyncHandler(async (req, res, next) => {
     Brand.findById(req.params.id).exec(),
     Product.find({ brand: req.params.id }, "name image image_name price mime_type").exec(),
   ]);
-  brand.base64 = new Buffer(brand.logo).toString('base64');
-  for(let i = 0; i < productsInBrand.length; i++) {
-    productsInBrand[i].base64 = new Buffer(productsInBrand[i].image).toString('base64');
-  }
   if (brand === null) {
     // No results.
     const err = new Error("Brand not found");
     err.status = 404;
     return next(err);
+  }
+  brand.base64 = new Buffer(brand.logo).toString('base64');
+  for(let i = 0; i < productsInBrand.length; i++) {
+    productsInBrand[i].base64 = new Buffer(productsInBrand[i].image).toString('base64');
   }
 
   res.render("brand_detail", {
@@ -122,12 +124,71 @@ exports.brand_create_post = [
 
 // Display Brand delete form on GET.
 exports.brand_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Genre delete GET");
+  // Get details of brand and all associated products (in parallel)
+  const [brand, productsInBrand] = await Promise.all([
+    Brand.findById(req.params.id).exec(),
+    Product.find({ brand: req.params.id }, "name image image_name price mime_type").exec(),
+  ]);
+
+  if (brand === null) {
+    // No results.
+    res.redirect("/catalog/brands");
+  }
+
+  for(let i = 0; i < productsInBrand.length; i++) {
+    productsInBrand[i].base64 = new Buffer(productsInBrand[i].image).toString('base64');
+  }
+
+  res.render("brand_delete", {
+    title: "Delete Brand",
+    brand: brand,
+    brand_products: productsInBrand,
+  });
 });
 
 // Handle Brand delete on POST.
 exports.brand_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Genre delete POST");
+  // Get details of brand and all associated products (in parallel)
+  const [brand, productsInBrand] = await Promise.all([
+    Brand.findById(req.params.id).exec(),
+    Product.find({ brand: req.params.id }, "name image image_name price mime_type").exec(),
+  ]);
+
+  if (productsInBrand.length > 0) {
+    // Brand has products. Render in same way as for GET route.
+    res.render("brand_delete", {
+      title: "Delete Brand",
+      brand: brand,
+      brand_products: productsInBrand,
+    });
+    return;
+  } else {
+    if (brand.admin == true) {
+      res.redirect(brand.url+'/delete/password')
+    }
+    // Brand has no products. Delete object and redirect to the list of brands.
+    await Brand.findByIdAndRemove(req.body.brandid);
+    res.redirect("/catalog/brands");
+  }
+});
+
+exports.brand_delete_password_get = asyncHandler(async (req, res, next) => {
+  res.render('secret_password', {
+    title: "Confirm Deletion",
+  })
+});
+
+exports.brand_delete_password_post = asyncHandler(async (req, res, next) => {
+  if (req.body.password === process.env.SECRET_PASSWORD) {
+    await Brand.findByIdAndRemove(req.body.brandid);
+    res.redirect("/catalog/brands");
+  }
+  else {
+    res.render('secret_password', {
+      title: "Confirm Deletion",
+      error: true,
+    })
+  }
 });
 
 // Display Brand update form on GET.
@@ -139,5 +200,3 @@ exports.brand_update_get = asyncHandler(async (req, res, next) => {
 exports.brand_update_post = asyncHandler(async (req, res, next) => {
   res.send("NOT IMPLEMENTED: Genre update POST");
 });
-
-//too bien

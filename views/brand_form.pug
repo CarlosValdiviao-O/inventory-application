@@ -9,7 +9,7 @@ block content
       input#name(type='text', placeholder='e.g Yamaha' name='name' value=(undefined===brand ? '' : brand.name))
     div
       label(for='description') Description:
-      textarea#(name="", cols="30", rows="10") #description(type='text', placeholder='e.g This manufacturer started in the year..' name='description' value=(undefined===brand ? '' : brand.description))
+      textarea#description(placeholder='e.g This manufacturer started in the year..' name='description' value=(undefined===brand ? '' : brand.description))
     div
       label(for='productImage') Logo:
       input#productImage(type='file', name='productImage' )

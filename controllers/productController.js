@@ -39,14 +39,14 @@ exports.product_list = asyncHandler(async (req, res, next) => {
 // Display detail page for a specific product.
 exports.product_detail = asyncHandler(async (req, res, next) => {
   const product = await Product.findById(req.params.id).populate('brand').populate('instrument').exec();
-  product.base64 = new Buffer(product.image).toString('base64');
+  
   if (product === null) {
     // No results.
     const err = new Error("Product not found");
     err.status = 404;
     return next(err);
   }
-
+  product.base64 = new Buffer(product.image).toString('base64');
   res.render("product_detail", {
     title: product.name,
     product: product,
@@ -163,12 +163,49 @@ exports.product_create_post = [
 
 // Display product delete form on GET.
 exports.product_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Book delete GET");
+  // Get details of product
+  const product = await Product.findById(req.params.id).exec();
+
+  if (product === null) {
+    // No results.
+    res.redirect("/catalog/products");
+  }
+
+  res.render("product_delete", {
+    title: "Delete Product",
+    product: product,
+  });
 });
 
 // Handle product delete on POST.
 exports.product_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Book delete POST");
+  // Get details of product
+  const product = await Product.findById(req.params.id).exec();
+  if (product.admin == true) {
+    res.redirect(product.url+'/delete/password')
+  }
+  // Product has no products. Delete object and redirect to the list of products.
+  await Product.findByIdAndRemove(req.body.productid);
+  res.redirect("/catalog/products");
+});
+
+exports.product_delete_password_get = asyncHandler(async (req, res, next) => {
+  res.render('secret_password', {
+    title: "Confirm Deletion",
+  })
+});
+
+exports.product_delete_password_post = asyncHandler(async (req, res, next) => {
+  if (req.body.password === process.env.SECRET_PASSWORD) {
+    await Product.findByIdAndRemove(req.body.productid);
+    res.redirect("/catalog/products");
+  }
+  else {
+    res.render('secret_password', {
+      title: "Confirm Deletion",
+      error: true,
+    })
+  }
 });
 
 // Display product update form on GET.

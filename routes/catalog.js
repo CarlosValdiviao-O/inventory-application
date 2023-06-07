@@ -50,6 +50,12 @@ router.get("/product/:name/:id/delete", product_controller.product_delete_get);
 // POST request to delete product.
 router.post("/product/:name/:id/delete", product_controller.product_delete_post);
 
+// GET request to confirm delete product.
+router.get("/product/:name/:id/delete/password", product_controller.product_delete_password_get);
+
+// POST request to confirm delete product.
+router.post("/product/:name/:id/delete/password", product_controller.product_delete_password_post);
+
 // GET request to update product.
 router.get("/product/:name/:id/update", product_controller.product_update_get);
 
@@ -75,6 +81,12 @@ router.get("/instrument/:name/:id/delete", instrument_controller.instrument_dele
 
 // POST request to delete instrument.
 router.post("/instrument/:name/:id/delete", instrument_controller.instrument_delete_post);
+
+// GET request to confirm delete instrument.
+router.get("/instrument/:name/:id/delete/password", instrument_controller.instrument_delete_password_get);
+
+// POST request to confirm delete instrument.
+router.post("/instrument/:name/:id/delete/password", instrument_controller.instrument_delete_password_post);
 
 // GET request to update instrument.
 router.get("/instrument/:name/:id/update", instrument_controller.instrument_update_get);
@@ -102,6 +114,12 @@ router.get("/brand/:name/:id/delete", brand_controller.brand_delete_get);
 // POST request to delete brand.
 router.post("/brand/:name/:id/delete", brand_controller.brand_delete_post);
 
+// GET request to confirm delete brand.
+router.get("/brand/:name/:id/delete/password", brand_controller.brand_delete_password_get);
+
+// POST request to confirm delete brand.
+router.post("/brand/:name/:id/delete/password", brand_controller.brand_delete_password_post);
+
 // GET request to update brand.
 router.get("/brand/:name/:id/update", brand_controller.brand_update_get);
 
@@ -115,6 +133,3 @@ router.get("/brand/:name/:id", brand_controller.brand_detail);
 router.get("/brands", brand_controller.brand_list);
 
 module.exports = router;
-
-
-//too bien

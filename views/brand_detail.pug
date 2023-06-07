@@ -19,4 +19,7 @@ block content
             h3 #{product.name}
             p= product.price + '$'
     else
-      li There are no products.  
+      li There are no products.
+  hr
+  p(class='bottom-link')
+    a(href=brand.url+'/delete')= brand.admin == true ? 'Delete brand (Requires password)' : 'Delete brand'  

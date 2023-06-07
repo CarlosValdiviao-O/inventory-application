@@ -16,3 +16,6 @@ block content
         a(href=product.brand.url) #{product.brand.name}
       p #[strong Instrument: ]
         a(href=product.instrument.url) #{product.instrument.name}
+  hr
+  p(class='bottom-link')
+    a(href=product.url+'/delete')= product.admin == true ? 'Delete product (Requires password)' : 'Delete product'  

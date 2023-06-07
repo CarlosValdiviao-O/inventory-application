@@ -9,7 +9,7 @@ block content
       input#name(type='text', placeholder='e.g Ukelele' name='name' value=(undefined===instrument ? '' : instrument.name))
     div
       label(for='description') Description:
-      textarea#(name="", cols="30", rows="10") #description(type='text', placeholder='e.g This instrument is typically used' name='description' value=(undefined===instrument ? '' : instrument.description))
+      textarea#description(placeholder='e.g This instrument is typically used' name='description' value=(undefined===instrument ? '' : instrument.description))
     div
       label(for='productImage') Image:
       input#productImage(type='file', name='productImage' )

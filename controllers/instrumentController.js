@@ -23,15 +23,16 @@ exports.instrument_detail = asyncHandler(async (req, res, next) => {
     Instrument.findById(req.params.id).exec(),
     Product.find({ instrument: req.params.id }, "name image image_name price mime_type").exec(),
   ]);
-  instrument.base64 = new Buffer(instrument.image).toString('base64');
-  for(let i = 0; i < productsInInstrument.length; i++) {
-    productsInInstrument[i].base64 = new Buffer(productsInInstrument[i].image).toString('base64');
-  }
   if (instrument === null) {
     // No results.
     const err = new Error("Instrument not found");
     err.status = 404;
     return next(err);
+  }
+
+  instrument.base64 = new Buffer(instrument.image).toString('base64');
+  for(let i = 0; i < productsInInstrument.length; i++) {
+    productsInInstrument[i].base64 = new Buffer(productsInInstrument[i].image).toString('base64');
   }
 
   res.render("instrument_detail", {
@@ -122,12 +123,71 @@ exports.instrument_create_post = [
 
 // Display Instrument delete form on GET.
 exports.instrument_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Author delete GET");
+  // Get details of instrument and all associated products (in parallel)
+  const [instrument, productsInInstrument] = await Promise.all([
+    Instrument.findById(req.params.id).exec(),
+    Product.find({ instrument: req.params.id }, "name image image_name price mime_type").exec(),
+  ]);
+
+  if (instrument === null) {
+    // No results.
+    res.redirect("/catalog/instruments");
+  }
+
+  for(let i = 0; i < productsInInstrument.length; i++) {
+    productsInInstrument[i].base64 = new Buffer(productsInInstrument[i].image).toString('base64');
+  }
+
+  res.render("instrument_delete", {
+    title: "Delete Instrument",
+    instrument: instrument,
+    instrument_products: productsInInstrument,
+  });
 });
 
 // Handle Instrument delete on POST.
 exports.instrument_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Author delete POST");
+  // Get details of instrument and all associated products (in parallel)
+  const [instrument, productsInInstrument] = await Promise.all([
+    Instrument.findById(req.params.id).exec(),
+    Product.find({ instrument: req.params.id }, "name image image_name price mime_type").exec(),
+  ]);
+
+  if (productsInInstrument.length > 0) {
+    // Instrument has products. Render in same way as for GET route.
+    res.render("instrument_delete", {
+      title: "Delete Instrument",
+      instrument: instrument,
+      instrument_products: productsInInstrument,
+    });
+    return;
+  } else {
+    if (instrument.admin == true) {
+      res.redirect(instrument.url+'/delete/password')
+    }
+    // Instrument has no products. Delete object and redirect to the list of instruments.
+    await Instrument.findByIdAndRemove(req.body.instrumentid);
+    res.redirect("/catalog/instruments");
+  }
+});
+
+exports.instrument_delete_password_get = asyncHandler(async (req, res, next) => {
+  res.render('secret_password', {
+    title: "Confirm Deletion",
+  })
+});
+
+exports.instrument_delete_password_post = asyncHandler(async (req, res, next) => {
+  if (req.body.password === process.env.SECRET_PASSWORD) {
+    await Instrument.findByIdAndRemove(req.body.instrumentid);
+    res.redirect("/catalog/instruments");
+  }
+  else {
+    res.render('secret_password', {
+      title: "Confirm Deletion",
+      error: true,
+    })
+  }
 });
 
 // Display Instrument update form on GET.

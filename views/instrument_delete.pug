@@ -1,0 +1,30 @@
+extends layout
+
+block content
+  h1 #{title}: #{instrument.name}
+
+  div(class='delete')
+    if instrument_products.length
+
+      p #[strong Delete the following products before attempting to delete this instrument.]
+
+      h1 Products
+      ul
+        each product in instrument_products
+          li(class='card')
+            a(href=product.url)
+              div(class='image-wrapper')
+                div(class='image') 
+                  img(src=`data:image/${product.mime_type};base64,${product.base64}`, alt=product.image_name)
+              div(class='info') 
+                  h3 #{product.name}
+                  p= product.price + '$'
+
+    else
+      p Do you really want to delete this Instrument?
+
+      form(method='POST' action='' class='delete')
+        div
+          input#authorid(type='hidden',name='instrumentid', required='true', value=instrument._id )
+
+        button(type='submit') Delete

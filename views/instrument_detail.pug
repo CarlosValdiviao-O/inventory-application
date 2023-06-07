@@ -20,3 +20,6 @@ block content
             p= product.price + '$'
     else
       li There are no products.  
+  hr
+  p(class='bottom-link')
+    a(href=instrument.url+'/delete')= instrument.admin == true ? 'Delete instrument (Requires password)' : 'Delete instrument'  
