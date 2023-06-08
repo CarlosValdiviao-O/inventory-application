@@ -29,6 +29,7 @@ const upload = multer({
   storage: storage,
   limits: {
     fileSize: 1024 * 1024 * 8,
+    fieldSize: 1024 * 1024 * 8,
   },
   fileFilter: fileFilter, 
 });
@@ -60,7 +61,13 @@ router.post("/product/:name/:id/delete/password", product_controller.product_del
 router.get("/product/:name/:id/update", product_controller.product_update_get);
 
 // POST request to update product.
-router.post("/product/:name/:id/update", product_controller.product_update_post);
+router.post("/product/:name/:id/update", upload.single('productImage'), product_controller.product_update_post);
+
+// GET request to update product.
+router.get("/product/:name/:id/update/password", product_controller.product_update_password_get);
+
+// POST request to update product.
+router.post("/product/:name/:id/update/password", product_controller.product_update_password_post);
 
 // GET request for one product.
 router.get("/product/:name/:id", product_controller.product_detail);
@@ -92,7 +99,13 @@ router.post("/instrument/:name/:id/delete/password", instrument_controller.instr
 router.get("/instrument/:name/:id/update", instrument_controller.instrument_update_get);
 
 // POST request to update instrument.
-router.post("/instrument/:name/:id/update", instrument_controller.instrument_update_post);
+router.post("/instrument/:name/:id/update", upload.single('productImage'), instrument_controller.instrument_update_post);
+
+// GET request to update instrument.
+router.get("/instrument/:name/:id/update/password", instrument_controller.instrument_update_password_get);
+
+// POST request to update instrument.
+router.post("/instrument/:name/:id/update/password", instrument_controller.instrument_update_password_post);
 
 // GET request for one instrument.
 router.get("/instrument/:name/:id", instrument_controller.instrument_detail);
@@ -124,7 +137,13 @@ router.post("/brand/:name/:id/delete/password", brand_controller.brand_delete_pa
 router.get("/brand/:name/:id/update", brand_controller.brand_update_get);
 
 // POST request to update brand.
-router.post("/brand/:id/update", brand_controller.brand_update_post);
+router.post("/brand/:name/:id/update", upload.single('productImage'), brand_controller.brand_update_post);
+
+// GET request to update brand.
+router.get("/brand/:name/:id/update/password", brand_controller.brand_update_password_get);
+
+// POST request to update brand.
+router.post("/brand/:name/:id/update/password", brand_controller.brand_update_password_post);
 
 // GET request for one brand.
 router.get("/brand/:name/:id", brand_controller.brand_detail);

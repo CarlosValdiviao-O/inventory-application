@@ -18,4 +18,6 @@ block content
         a(href=product.instrument.url) #{product.instrument.name}
   hr
   p(class='bottom-link')
-    a(href=product.url+'/delete')= product.admin == true ? 'Delete product (Requires password)' : 'Delete product'  
+    a(href=product.url+'/delete')= product.admin == true ? 'Delete product (Requires password)' : 'Delete product'
+  p(class='bottom-link')
+    a(href=product.url+'/update')= product.admin == true ? 'Update product (Requires password)' : 'Update product'  

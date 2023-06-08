@@ -1,4 +1,5 @@
 const Instrument = require("../models/instrument");
+const TempInstrument = require("../models/temp_instrument");
 const Product = require("../models/product");
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
@@ -192,10 +193,130 @@ exports.instrument_delete_password_post = asyncHandler(async (req, res, next) =>
 
 // Display Instrument update form on GET.
 exports.instrument_update_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Author update GET");
+  const instrument = await Instrument.findById(req.params.id).exec();
+
+  if (instrument === null) {
+    // No results.
+    const err = new Error("Instrument not found");
+    err.status = 404;
+    return next(err);
+  }
+  instrument.base64 = new Buffer(instrument.image).toString('base64');
+
+  res.render("instrument_form", {
+    title: "Update Instrument",
+    instrument: instrument,
+  });
 });
 
 // Handle Instrument update on POST.
-exports.instrument_update_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Author update POST");
+exports.instrument_update_post = [
+  // Validate and sanitize fields.
+  body("name", "Instrument name must contain at least 3 characters")
+    .trim()
+    .isLength({ min: 3 })
+    .escape(),
+  body("name", "Instrument name must contain less than 50 characters")
+    .trim()
+    .isLength({ max: 50 })
+    .escape(),
+  body('description', 'Description must contain at least 50 characters')
+    .trim()
+    .isLength({ min: 50 })
+    .escape(),
+  body('description', 'Description must contain less than 1000 characters')
+    .trim()
+    .isLength({ max: 1000 })
+    .escape(),
+
+  // Process request after validation and sanitization.
+  asyncHandler(async (req, res, next) => {
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+    let img = new Buffer(req.body.base64, 'base64'),
+      img_name = req.body.img_name;
+    if (req.file) {
+      let data = await fs.readFile(`./uploads/${req.file.filename}`);
+
+      // Convert to Base64 and print out a bit to show it's a string
+      let base64 = data.toString('base64');
+
+      // Feed out string to a buffer and then put it in the database
+      img = new Buffer(base64, 'base64');
+      img_name = req.body.name.toLowerCase().replace(/ /g, '-') + '.' + req.file.mimetype;
+      await fs.unlink(`./uploads/${req.file.filename}`);
+    }
+    // Create a instrument object with escaped and trimmed data.
+    const instrument = new Instrument({ 
+      name: req.body.name,
+      description: req.body.description, 
+      image: img,
+      image_name: img_name,
+      admin: req.body.admin == 'true' ? true : false,
+      _id: req.params.id, // This is required, or a new ID will be assigned!
+    });
+
+    if (!errors.isEmpty()) {
+      instrument.base64 = new Buffer(instrument.image).toString('base64');
+      // There are errors. Render the form again with sanitized values/error messages.
+      res.render("instrument_form", {
+        title: "Update Instrument",
+        instrument: instrument,
+        errors: errors.array().concat(fileErrors),
+      });
+      return;
+    } else {
+        if (instrument.admin === true) {
+          //create temp
+          const tempInstrument = new TempInstrument({ 
+            createdAt: new Date(),
+            name: req.body.name,
+            description: req.body.description, 
+            image: img,
+            image_name: img_name,
+            admin: true,
+            original: req.params.id, 
+          });
+          await tempInstrument.save();
+          res.redirect(instrument.url + '/update/password')
+        }
+        // Data from form is valid. Update the record.
+        const theinstrument = await Instrument.findByIdAndUpdate(req.params.id, instrument, {});
+        // Redirect to instrument detail page.
+        res.redirect(theinstrument.url);
+    }
+  }),
+];
+
+exports.instrument_update_password_get = asyncHandler(async (req, res, next) => {
+  res.render('secret_password', {
+    title: "Confirm Update",
+  })
+});
+
+exports.instrument_update_password_post = asyncHandler(async (req, res, next) => {
+  
+  if (req.body.password === process.env.SECRET_PASSWORD) {
+    const tempInstrument = await TempInstrument.findOne({original: req.params.id}).sort({createdAt: -1}).exec();
+    if (tempInstrument === null) {
+      res.redirect('/catalog/instrument/' + req.params.name + '/' + req.params.id)
+    }
+    const instrument = new Instrument({ 
+      name: tempInstrument.name,
+      description: tempInstrument.description, 
+      image: tempInstrument.image,
+      image_name: tempInstrument.image_name,
+      admin: tempInstrument.admin,
+      _id: req.params.id, 
+    });
+    const theinstrument = await Instrument.findByIdAndUpdate(req.params.id, instrument, {});
+    // Redirect to instrument detail page.
+    res.redirect(theinstrument.url);
+  }
+  else {
+    res.render('secret_password', {
+      title: "Confirm Update",
+      error: true,
+    })
+  }
 });

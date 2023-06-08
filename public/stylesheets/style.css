@@ -24,6 +24,7 @@ nav ul {
   height: 40px;
   align-items: center;
   background-color: grey;
+  font-size: large;
 }
 
 nav ul li {
@@ -45,6 +46,7 @@ nav ul li {
   cursor: pointer;
   background-color: transparent;
   color: white;
+  font-size: large;
 }
 
 .create-links {
@@ -191,7 +193,7 @@ hr {
 }
 
 .bottom-link {
-  margin: 15px 30px;
+  margin: 15px 30px 0;
 }
 
 form:not(.delete) {
@@ -204,7 +206,7 @@ form:not(.delete) {
   font-size: large;
 }
 
-form:not(.delete) div {
+form:not(.delete)>div:not(.hidden) {
   display: flex;
   flex-direction: column;
   gap: 8px;

@@ -9,10 +9,21 @@ block content
       input#name(type='text', placeholder='e.g Yamaha' name='name' value=(undefined===brand ? '' : brand.name))
     div
       label(for='description') Description:
-      textarea#description(placeholder='e.g This manufacturer started in the year..' name='description' value=(undefined===brand ? '' : brand.description))
+      textarea#description(rows=5 placeholder='e.g This manufacturer started in the year..' name='description') #{undefined===brand ? '' : brand.description}
     div
       label(for='productImage') Logo:
       input#productImage(type='file', name='productImage' )
+      if brand
+        p Previous Image
+        div(class='preview')
+          div(class='image') 
+            img(src=`data:image/${brand.mime_type};base64,${brand.base64}`, alt=brand.logo_name)
+    if brand
+      div.hidden
+        input#base64(type='hidden',name='base64', required='true', value=brand.base64 )
+        input#img_name(type='hidden',name='img_name', required='true', value=brand.logo_name )
+        input#admin(type='hidden',name='admin', required='true', value='' + brand.admin )
+    
     button(type='submit') Submit
 
   if errors

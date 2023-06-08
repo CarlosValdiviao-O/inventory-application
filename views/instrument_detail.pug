@@ -23,3 +23,5 @@ block content
   hr
   p(class='bottom-link')
     a(href=instrument.url+'/delete')= instrument.admin == true ? 'Delete instrument (Requires password)' : 'Delete instrument'  
+  p(class='bottom-link')
+    a(href=instrument.url+'/update')= instrument.admin == true ? 'Update instrument (Requires password)' : 'Update instrument'  

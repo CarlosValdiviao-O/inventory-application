@@ -27,7 +27,7 @@ block content
             option(value=brand._id) #{brand.name}
     div
       label(for='description') Description:
-      textarea#description(placeholder='Description' name='description' required='true') #{undefined===product ? '' : product.description}
+      textarea#description(placeholder='Description' name='description' required='true' rows=5) #{undefined===product ? '' : product.description}
     div
       label(for='price') Price:
       input#price(type='text', placeholder='Price' name='price' value=(undefined===product ? '' : product.price) required='true')
@@ -36,7 +36,17 @@ block content
       input#in_stock(type='text', placeholder='Quantity' name='in_stock' value=(undefined===product ? '' : product.in_stock) required='true')
     div
       label(for='productImage') Image:
-      input#productImage(type='file', name='productImage' )
+      input#productImage(type='file', name='productImage' title='Only PNG JPG and JPEG allowed')
+      if product
+        p Previous Image
+        div(class='preview')
+          div(class='image') 
+            img(src=`data:image/${product.mime_type};base64,${product.base64}`, alt=product.image_name)
+    if product
+      div.hidden
+        input#base64(type='hidden',name='base64', required='true', value=product.base64 )
+        input#img_name(type='hidden',name='img_name', required='true', value=product.image_name )
+        input#admin(type='hidden',name='admin', required='true', value='' + product.admin )
     button(type='submit') Submit
 
   if errors

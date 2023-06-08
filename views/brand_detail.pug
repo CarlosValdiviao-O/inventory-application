@@ -23,3 +23,5 @@ block content
   hr
   p(class='bottom-link')
     a(href=brand.url+'/delete')= brand.admin == true ? 'Delete brand (Requires password)' : 'Delete brand'  
+  p(class='bottom-link')
+    a(href=brand.url+'/update')= brand.admin == true ? 'Update brand (Requires password)' : 'Update brand'    
