@@ -5,6 +5,7 @@ const Brand = require('../models/brand');
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
 const fs = require('mz/fs');
+const validator = require('validator');
 
 exports.index = asyncHandler(async (req, res, next) => {
     // Get details of products, instruments and brands counts (in parallel)
@@ -33,6 +34,7 @@ exports.product_list = asyncHandler(async (req, res, next) => {
       .exec();
     for(let i = 0; i < allProducts.length; i++) {
       allProducts[i].base64 = new Buffer(allProducts[i].image).toString('base64');
+      allProducts[i].name = validator.unescape(allProducts[i].name);
     }
     res.render("product_list", { title: "Product List", product_list: allProducts });
 });
@@ -48,6 +50,10 @@ exports.product_detail = asyncHandler(async (req, res, next) => {
     return next(err);
   }
   product.base64 = new Buffer(product.image).toString('base64');
+  product.name =  validator.unescape(product.name);
+  product.description =  validator.unescape(product.description);
+  product.brand.name =  validator.unescape(product.brand.name);
+  product.instrument.name =  validator.unescape(product.instrument.name);
   res.render("product_detail", {
     title: product.name,
     product: product,
@@ -61,6 +67,12 @@ exports.product_create_get = asyncHandler(async (req, res, next) => {
     Instrument.find({}, 'name _id').exec(),
     Brand.find({}, 'name _id').exec(),
   ]);
+  for(let i = 0; i < allInstruments.length; i++) {
+    allInstruments[i].name = validator.unescape(allInstruments[i].name);
+  }
+  for(let i = 0; i < allBrands.length; i++) {
+    allBrands[i].name = validator.unescape(allBrands[i].name);
+  }
 
   res.render("product_form", {
     title: "Create Product",
@@ -77,17 +89,13 @@ exports.product_create_post = [
     .isLength({ min: 3 })
     .escape(),
   body("name", "Product name must contain less than 50 characters")
-    .trim()
-    .isLength({ max: 50 })
-    .escape(),
+    .isLength({ max: 50 }),
   body('description', 'Description must contain at least 50 characters')
     .trim()
     .isLength({ min: 50 })
     .escape(),
   body('description', 'Description must contain less than 1000 characters')
-    .trim()
-    .isLength({ max: 1000 })
-    .escape(),
+    .isLength({ max: 1000 }),
   body('price', 'Price oustide of range')
     .trim()
     .isFloat({ min: 1, max: 10000000})
@@ -136,7 +144,14 @@ exports.product_create_post = [
         Instrument.find({}, 'name _id').exec(),
         Brand.find({}, 'name _id').exec(),
       ]);
-
+      for(let i = 0; i < allInstruments.length; i++) {
+        allInstruments[i].name = validator.unescape(allInstruments[i].name);
+      }
+      for(let i = 0; i < allBrands.length; i++) {
+        allBrands[i].name = validator.unescape(allBrands[i].name);
+      }
+      product.name = validator.unescape(product.name);
+      product.description = validator.unescape(product.description);
       // There are errors. Render the form again with sanitized values/error messages.
       res.render("product_form", {
         title: "Create Product",
@@ -172,6 +187,7 @@ exports.product_delete_get = asyncHandler(async (req, res, next) => {
     res.redirect("/catalog/products");
   }
 
+  product.name = validator.unescape(product.name);
   res.render("product_delete", {
     title: "Delete Product",
     product: product,
@@ -224,6 +240,14 @@ exports.product_update_get = asyncHandler(async (req, res, next) => {
     err.status = 404;
     return next(err);
   }
+  for(let i = 0; i < allInstruments.length; i++) {
+    allInstruments[i].name = validator.unescape(allInstruments[i].name);
+  }
+  for(let i = 0; i < allBrands.length; i++) {
+    allBrands[i].name = validator.unescape(allBrands[i].name);
+  }
+  product.name = validator.unescape(product.name);
+  product.description = validator.unescape(product.description);
   product.base64 = new Buffer(product.image).toString('base64');
 
   res.render("product_form", {
@@ -242,17 +266,13 @@ exports.product_update_post = [
     .isLength({ min: 3 })
     .escape(),
   body("name", "Product name must contain less than 50 characters")
-    .trim()
-    .isLength({ max: 50 })
-    .escape(),
+    .isLength({ max: 50 }),
   body('description', 'Description must contain at least 50 characters')
     .trim()
     .isLength({ min: 50 })
     .escape(),
   body('description', 'Description must contain less than 1000 characters')
-    .trim()
-    .isLength({ max: 1000 })
-    .escape(),
+    .isLength({ max: 1000 }),
   body('price', 'Price oustide of range')
     .trim()
     .isFloat({ min: 1, max: 10000000})
@@ -298,6 +318,14 @@ exports.product_update_post = [
         Instrument.find({}, 'name _id').exec(),
         Brand.find({}, 'name _id').exec(),
       ]);
+      for(let i = 0; i < allInstruments.length; i++) {
+        allInstruments[i].name = validator.unescape(allInstruments[i].name);
+      }
+      for(let i = 0; i < allBrands.length; i++) {
+        allBrands[i].name = validator.unescape(allBrands[i].name);
+      }
+      product.name = validator.unescape(product.name);
+      product.description = validator.unescape(product.description);
       product.base64 = new Buffer(product.image).toString('base64');
 
       // There are errors. Render the form again with sanitized values/error messages.
@@ -347,7 +375,7 @@ exports.product_update_password_post = asyncHandler(async (req, res, next) => {
   if (req.body.password === process.env.SECRET_PASSWORD) {
     const tempProduct = await TempProduct.findOne({original: req.params.id}).sort({createdAt: -1}).populate('brand').populate('instrument').exec();
     if (tempProduct === null) {
-      res.redirect('/catalog/product/' + req.params.name + '/' + req.params.id)
+      res.redirect('/catalog/product/' + req.params.id)
     }
     const product = new Product({ 
       name: tempProduct.name,

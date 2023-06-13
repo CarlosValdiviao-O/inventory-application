@@ -11,7 +11,7 @@ const InstrumentSchema = new Schema({
 });
 
 InstrumentSchema.virtual("url").get(function () {
-  return `/catalog/instrument/${this.name.toLowerCase().replace(/ /g, '-')}/${this._id}`;
+  return `/catalog/instrument/${this._id}`;
 });
 
 InstrumentSchema.virtual('mime_type').get(function () {

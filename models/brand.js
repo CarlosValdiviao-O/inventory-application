@@ -11,7 +11,7 @@ const BrandSchema = new Schema({
 });
 
 BrandSchema.virtual("url").get(function () {
-  return `/catalog/brand/${this.name.toLowerCase().replace(/ /g, '-')}/${this._id}`;
+  return `/catalog/brand/${this._id}`;
 });
 
 BrandSchema.virtual('mime_type').get(function () {

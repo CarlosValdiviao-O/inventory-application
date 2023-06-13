@@ -37,7 +37,7 @@ block content
     div
       label(for='productImage') Image:
       input#productImage(type='file', name='productImage' title='Only PNG JPG and JPEG allowed')
-      if product
+      if product && product.base64
         p Previous Image
         div(class='preview')
           div(class='image') 

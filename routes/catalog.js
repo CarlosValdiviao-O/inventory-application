@@ -46,31 +46,31 @@ router.get("/product/create", product_controller.product_create_get);
 router.post("/product/create", upload.single('productImage'), product_controller.product_create_post);
 
 // GET request to delete product.
-router.get("/product/:name/:id/delete", product_controller.product_delete_get);
+router.get("/product/:id/delete", product_controller.product_delete_get);
 
 // POST request to delete product.
-router.post("/product/:name/:id/delete", product_controller.product_delete_post);
+router.post("/product/:id/delete", product_controller.product_delete_post);
 
 // GET request to confirm delete product.
-router.get("/product/:name/:id/delete/password", product_controller.product_delete_password_get);
+router.get("/product/:id/delete/password", product_controller.product_delete_password_get);
 
 // POST request to confirm delete product.
-router.post("/product/:name/:id/delete/password", product_controller.product_delete_password_post);
+router.post("/product/:id/delete/password", product_controller.product_delete_password_post);
 
 // GET request to update product.
-router.get("/product/:name/:id/update", product_controller.product_update_get);
+router.get("/product/:id/update", product_controller.product_update_get);
 
 // POST request to update product.
-router.post("/product/:name/:id/update", upload.single('productImage'), product_controller.product_update_post);
+router.post("/product/:id/update", upload.single('productImage'), product_controller.product_update_post);
 
 // GET request to update product.
-router.get("/product/:name/:id/update/password", product_controller.product_update_password_get);
+router.get("/product/:id/update/password", product_controller.product_update_password_get);
 
 // POST request to update product.
-router.post("/product/:name/:id/update/password", product_controller.product_update_password_post);
+router.post("/product/:id/update/password", product_controller.product_update_password_post);
 
 // GET request for one product.
-router.get("/product/:name/:id", product_controller.product_detail);
+router.get("/product/:id", product_controller.product_detail);
 
 // GET request for list of all product items.
 router.get("/products", product_controller.product_list);
@@ -84,31 +84,31 @@ router.get("/instrument/create", instrument_controller.instrument_create_get);
 router.post("/instrument/create", upload.single('productImage'), instrument_controller.instrument_create_post);
 
 // GET request to delete instrument.
-router.get("/instrument/:name/:id/delete", instrument_controller.instrument_delete_get);
+router.get("/instrument/:id/delete", instrument_controller.instrument_delete_get);
 
 // POST request to delete instrument.
-router.post("/instrument/:name/:id/delete", instrument_controller.instrument_delete_post);
+router.post("/instrument/:id/delete", instrument_controller.instrument_delete_post);
 
 // GET request to confirm delete instrument.
-router.get("/instrument/:name/:id/delete/password", instrument_controller.instrument_delete_password_get);
+router.get("/instrument/:id/delete/password", instrument_controller.instrument_delete_password_get);
 
 // POST request to confirm delete instrument.
-router.post("/instrument/:name/:id/delete/password", instrument_controller.instrument_delete_password_post);
+router.post("/instrument/:id/delete/password", instrument_controller.instrument_delete_password_post);
 
 // GET request to update instrument.
-router.get("/instrument/:name/:id/update", instrument_controller.instrument_update_get);
+router.get("/instrument/:id/update", instrument_controller.instrument_update_get);
 
 // POST request to update instrument.
-router.post("/instrument/:name/:id/update", upload.single('productImage'), instrument_controller.instrument_update_post);
+router.post("/instrument/:id/update", upload.single('productImage'), instrument_controller.instrument_update_post);
 
 // GET request to update instrument.
-router.get("/instrument/:name/:id/update/password", instrument_controller.instrument_update_password_get);
+router.get("/instrument/:id/update/password", instrument_controller.instrument_update_password_get);
 
 // POST request to update instrument.
-router.post("/instrument/:name/:id/update/password", instrument_controller.instrument_update_password_post);
+router.post("/instrument/:id/update/password", instrument_controller.instrument_update_password_post);
 
 // GET request for one instrument.
-router.get("/instrument/:name/:id", instrument_controller.instrument_detail);
+router.get("/instrument/:id", instrument_controller.instrument_detail);
 
 // GET request for list of all instruments.
 router.get("/instruments", instrument_controller.instrument_list);
@@ -122,31 +122,31 @@ router.get("/brand/create", brand_controller.brand_create_get);
 router.post("/brand/create", upload.single('productImage'), brand_controller.brand_create_post);
 
 // GET request to delete brand.
-router.get("/brand/:name/:id/delete", brand_controller.brand_delete_get);
+router.get("/brand/:id/delete", brand_controller.brand_delete_get);
 
 // POST request to delete brand.
-router.post("/brand/:name/:id/delete", brand_controller.brand_delete_post);
+router.post("/brand/:id/delete", brand_controller.brand_delete_post);
 
 // GET request to confirm delete brand.
-router.get("/brand/:name/:id/delete/password", brand_controller.brand_delete_password_get);
+router.get("/brand/:id/delete/password", brand_controller.brand_delete_password_get);
 
 // POST request to confirm delete brand.
-router.post("/brand/:name/:id/delete/password", brand_controller.brand_delete_password_post);
+router.post("/brand/:id/delete/password", brand_controller.brand_delete_password_post);
 
 // GET request to update brand.
-router.get("/brand/:name/:id/update", brand_controller.brand_update_get);
+router.get("/brand/:id/update", brand_controller.brand_update_get);
 
 // POST request to update brand.
-router.post("/brand/:name/:id/update", upload.single('productImage'), brand_controller.brand_update_post);
+router.post("/brand/:id/update", upload.single('productImage'), brand_controller.brand_update_post);
 
 // GET request to update brand.
-router.get("/brand/:name/:id/update/password", brand_controller.brand_update_password_get);
+router.get("/brand/:id/update/password", brand_controller.brand_update_password_get);
 
 // POST request to update brand.
-router.post("/brand/:name/:id/update/password", brand_controller.brand_update_password_post);
+router.post("/brand/:id/update/password", brand_controller.brand_update_password_post);
 
 // GET request for one brand.
-router.get("/brand/:name/:id", brand_controller.brand_detail);
+router.get("/brand/:id", brand_controller.brand_detail);
 
 // GET request for list of all brands.
 router.get("/brands", brand_controller.brand_list);

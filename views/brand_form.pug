@@ -13,7 +13,7 @@ block content
     div
       label(for='productImage') Logo:
       input#productImage(type='file', name='productImage' )
-      if brand
+      if brand && brand.base64
         p Previous Image
         div(class='preview')
           div(class='image') 

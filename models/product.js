@@ -15,7 +15,7 @@ const ProductSchema = new Schema({
 });
 
 ProductSchema.virtual("url").get(function () {
-  return `/catalog/product/${this.name.toLowerCase().replace(/ /g, '-')}/${this._id}`;
+  return `/catalog/product/${this._id}`;
 });
 
 ProductSchema.virtual('mime_type').get(function () {

@@ -4,6 +4,7 @@ const Product = require('../models/product');
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
 const fs = require('mz/fs');
+const validator = require('validator');
 
 require('dotenv').config();
 
@@ -12,6 +13,7 @@ exports.brand_list = asyncHandler(async (req, res, next) => {
   const allBrands = await Brand.find().sort({ name: 1 }).exec();
   for(let i = 0; i < allBrands.length; i++) {
     allBrands[i].base64 = new Buffer(allBrands[i].logo).toString('base64');
+    allBrands[i].name = validator.unescape(allBrands[i].name)
   }
   res.render("brand_list", {
     title: "Brand List",
@@ -22,9 +24,9 @@ exports.brand_list = asyncHandler(async (req, res, next) => {
 // Display detail page for a specific Brand.
 exports.brand_detail = asyncHandler(async (req, res, next) => {
   // Get details of brand and all associated products (in parallel)
-  const [brand, productsInBrand] = await Promise.all([
+  let [brand, productsInBrand] = await Promise.all([
     Brand.findById(req.params.id).exec(),
-    Product.find({ brand: req.params.id }, "name image image_name price mime_type").exec(),
+    Product.find({ brand: req.params.id }, "name image image_name price mime_type url").exec(),
   ]);
   if (brand === null) {
     // No results.
@@ -33,8 +35,11 @@ exports.brand_detail = asyncHandler(async (req, res, next) => {
     return next(err);
   }
   brand.base64 = new Buffer(brand.logo).toString('base64');
+  brand.name = validator.unescape(brand.name);
+  brand.description = validator.unescape(brand.description);
   for(let i = 0; i < productsInBrand.length; i++) {
     productsInBrand[i].base64 = new Buffer(productsInBrand[i].image).toString('base64');
+    productsInBrand[i].name = validator.unescape(productsInBrand[i].name);
   }
 
   res.render("brand_detail", {
@@ -57,17 +62,13 @@ exports.brand_create_post = [
     .isLength({ min: 3 })
     .escape(),
   body("name", "Brand name must contain less than 50 characters")
-    .trim()
-    .isLength({ max: 50 })
-    .escape(),
+    .isLength({ max: 50 }),
   body('description', 'Description must contain at least 50 characters')
     .trim()
     .isLength({ min: 50 })
     .escape(),
   body('description', 'Description must contain less than 1000 characters')
-    .trim()
-    .isLength({ max: 1000 })
-    .escape(),
+    .isLength({ max: 1000 }),
 
   // Process request after validation and sanitization.
   asyncHandler(async (req, res, next) => {
@@ -101,6 +102,9 @@ exports.brand_create_post = [
 
     if (!errors.isEmpty() || fileErrors.length > 0) {
       // There are errors. Render the form again with sanitized values/error messages.
+      
+      brand.name = validator.unescape(brand.name);
+      brand.description = validator.unescape(brand.description);
       res.render("brand_form", {
         title: "Create Brand",
         brand: brand,
@@ -128,7 +132,7 @@ exports.brand_delete_get = asyncHandler(async (req, res, next) => {
   // Get details of brand and all associated products (in parallel)
   const [brand, productsInBrand] = await Promise.all([
     Brand.findById(req.params.id).exec(),
-    Product.find({ brand: req.params.id }, "name image image_name price mime_type").exec(),
+    Product.find({ brand: req.params.id }, "name image image_name price mime_type url").exec(),
   ]);
 
   if (brand === null) {
@@ -136,8 +140,10 @@ exports.brand_delete_get = asyncHandler(async (req, res, next) => {
     res.redirect("/catalog/brands");
   }
 
+  brand.name = validator.unescape(brand.name);
   for(let i = 0; i < productsInBrand.length; i++) {
     productsInBrand[i].base64 = new Buffer(productsInBrand[i].image).toString('base64');
+    productsInBrand[i].name = validator.unescape(productsInBrand[i].name);
   }
 
   res.render("brand_delete", {
@@ -152,11 +158,16 @@ exports.brand_delete_post = asyncHandler(async (req, res, next) => {
   // Get details of brand and all associated products (in parallel)
   const [brand, productsInBrand] = await Promise.all([
     Brand.findById(req.params.id).exec(),
-    Product.find({ brand: req.params.id }, "name image image_name price mime_type").exec(),
+    Product.find({ brand: req.params.id }, "name image image_name price mime_type url").exec(),
   ]);
 
   if (productsInBrand.length > 0) {
     // Brand has products. Render in same way as for GET route.
+    brand.name = validator.unescape(brand.name);
+    for(let i = 0; i < productsInBrand.length; i++) {
+      productsInBrand[i].base64 = new Buffer(productsInBrand[i].image).toString('base64');
+      productsInBrand[i].name = validator.unescape(productsInBrand[i].name);
+    }
     res.render("brand_delete", {
       title: "Delete Brand",
       brand: brand,
@@ -203,7 +214,8 @@ exports.brand_update_get = asyncHandler(async (req, res, next) => {
     return next(err);
   }
   brand.base64 = new Buffer(brand.logo).toString('base64');
-
+  brand.name = validator.unescape(brand.name);
+  brand.description = validator.unescape(brand.description);
   res.render("brand_form", {
     title: "Update Brand",
     brand: brand,
@@ -218,17 +230,13 @@ exports.brand_update_post = [
     .isLength({ min: 3 })
     .escape(),
   body("name", "Brand name must contain less than 50 characters")
-    .trim()
-    .isLength({ max: 50 })
-    .escape(),
+    .isLength({ max: 50 }),
   body('description', 'Description must contain at least 50 characters')
     .trim()
     .isLength({ min: 50 })
     .escape(),
   body('description', 'Description must contain less than 1000 characters')
-    .trim()
-    .isLength({ max: 1000 })
-    .escape(),
+    .isLength({ max: 1000 }),
 
   // Process request after validation and sanitization.
   asyncHandler(async (req, res, next) => {
@@ -259,11 +267,13 @@ exports.brand_update_post = [
 
     if (!errors.isEmpty()) {
       brand.base64 = new Buffer(brand.logo).toString('base64');
+      brand.name = validator.unescape(brand.name);  
+      brand.description = validator.unescape(brand.description);
       // There are errors. Render the form again with sanitized values/error messages.
       res.render("brand_form", {
         title: "Update Brand",
         brand: brand,
-        errors: errors.array().concat(fileErrors),
+        errors: errors.array(),
       });
       return;
     } else {
@@ -300,7 +310,7 @@ exports.brand_update_password_post = asyncHandler(async (req, res, next) => {
   if (req.body.password === process.env.SECRET_PASSWORD) {
     const tempBrand = await TempBrand.findOne({original: req.params.id}).sort({createdAt: -1}).exec();
     if (tempBrand === null) {
-      res.redirect('/catalog/brand/' + req.params.name + '/' + req.params.id)
+      res.redirect('/catalog/brand/' + req.params.id)
     }
     const brand = new Brand({ 
       name: tempBrand.name,

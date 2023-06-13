@@ -4,12 +4,14 @@ const Product = require("../models/product");
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
 const fs = require('mz/fs');
+const validator = require('validator');
 
 // Display list of all Instruments.
 exports.instrument_list = asyncHandler(async (req, res, next) => {
   const allInstruments = await Instrument.find().sort({ name: 1 }).exec();
   for(let i = 0; i < allInstruments.length; i++) {
     allInstruments[i].base64 = new Buffer(allInstruments[i].image).toString('base64');
+    allInstruments[i].name = validator.unescape(allInstruments[i].name);
   }
   res.render("instrument_list", {
     title: "Instrument List",
@@ -30,10 +32,12 @@ exports.instrument_detail = asyncHandler(async (req, res, next) => {
     err.status = 404;
     return next(err);
   }
-
+  instrument.name = validator.unescape(instrument.name);
+  instrument.description = validator.unescape(instrument.description);
   instrument.base64 = new Buffer(instrument.image).toString('base64');
   for(let i = 0; i < productsInInstrument.length; i++) {
     productsInInstrument[i].base64 = new Buffer(productsInInstrument[i].image).toString('base64');
+    productsInInstrument[i].name = validator.unescape(productsInInstrument[i].name);
   }
 
   res.render("instrument_detail", {
@@ -56,17 +60,13 @@ exports.instrument_create_post = [
     .isLength({ min: 3 })
     .escape(),
   body("name", "Instrument name must contain less than 50 characters")
-    .trim()
-    .isLength({ max: 50 })
-    .escape(),
+    .isLength({ max: 50 }),
   body('description', 'Description must contain at least 50 characters')
     .trim()
     .isLength({ min: 50 })
     .escape(),
   body('description', 'Description must contain less than 1000 characters')
-    .trim()
-    .isLength({ max: 1000 })
-    .escape(),
+    .isLength({ max: 1000 }),
 
   // Process request after validation and sanitization.
   asyncHandler(async (req, res, next) => {
@@ -100,6 +100,9 @@ exports.instrument_create_post = [
 
     if (!errors.isEmpty() || fileErrors.length > 0) {
       // There are errors. Render the form again with sanitized values/error messages.
+      
+      instrument.name = validator.unescape(instrument.name);
+      instrument.description = validator.unescape(instrument.description);
       res.render("instrument_form", {
         title: "Create Instrument",
         instrument: instrument,
@@ -135,8 +138,10 @@ exports.instrument_delete_get = asyncHandler(async (req, res, next) => {
     res.redirect("/catalog/instruments");
   }
 
+  instrument.name = validator.unescape(instrument.name);
   for(let i = 0; i < productsInInstrument.length; i++) {
     productsInInstrument[i].base64 = new Buffer(productsInInstrument[i].image).toString('base64');
+    productsInInstrument[i].name = validator.unescape(productsInInstrument[i].name);
   }
 
   res.render("instrument_delete", {
@@ -156,6 +161,11 @@ exports.instrument_delete_post = asyncHandler(async (req, res, next) => {
 
   if (productsInInstrument.length > 0) {
     // Instrument has products. Render in same way as for GET route.
+    instrument.name = validator.unescape(instrument.name);
+    for(let i = 0; i < productsInInstrument.length; i++) {
+      productsInInstrument[i].base64 = new Buffer(productsInInstrument[i].image).toString('base64');
+      productsInInstrument[i].name = validator.unescape(productsInInstrument[i].name);
+    }
     res.render("instrument_delete", {
       title: "Delete Instrument",
       instrument: instrument,
@@ -202,7 +212,8 @@ exports.instrument_update_get = asyncHandler(async (req, res, next) => {
     return next(err);
   }
   instrument.base64 = new Buffer(instrument.image).toString('base64');
-
+  instrument.name = validator.unescape(instrument.name);
+  instrument.description = validator.unescape(instrument.description);
   res.render("instrument_form", {
     title: "Update Instrument",
     instrument: instrument,
@@ -217,17 +228,13 @@ exports.instrument_update_post = [
     .isLength({ min: 3 })
     .escape(),
   body("name", "Instrument name must contain less than 50 characters")
-    .trim()
-    .isLength({ max: 50 })
-    .escape(),
+    .isLength({ max: 50 }),
   body('description', 'Description must contain at least 50 characters')
     .trim()
     .isLength({ min: 50 })
     .escape(),
   body('description', 'Description must contain less than 1000 characters')
-    .trim()
-    .isLength({ max: 1000 })
-    .escape(),
+    .isLength({ max: 1000 }),
 
   // Process request after validation and sanitization.
   asyncHandler(async (req, res, next) => {
@@ -258,11 +265,13 @@ exports.instrument_update_post = [
 
     if (!errors.isEmpty()) {
       instrument.base64 = new Buffer(instrument.image).toString('base64');
+      instrument.name = validator.unescape(instrument.name);
+      instrument.description = validator.unescape(instrument.description);
       // There are errors. Render the form again with sanitized values/error messages.
       res.render("instrument_form", {
         title: "Update Instrument",
         instrument: instrument,
-        errors: errors.array().concat(fileErrors),
+        errors: errors.array(),
       });
       return;
     } else {
@@ -299,7 +308,7 @@ exports.instrument_update_password_post = asyncHandler(async (req, res, next) =>
   if (req.body.password === process.env.SECRET_PASSWORD) {
     const tempInstrument = await TempInstrument.findOne({original: req.params.id}).sort({createdAt: -1}).exec();
     if (tempInstrument === null) {
-      res.redirect('/catalog/instrument/' + req.params.name + '/' + req.params.id)
+      res.redirect('/catalog/instrument/' + req.params.id)
     }
     const instrument = new Instrument({ 
       name: tempInstrument.name,
